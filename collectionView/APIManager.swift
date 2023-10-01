@@ -3,7 +3,7 @@
 //  collectionView
 //
 //  Created by Nurmukhanbet Sertay on 06.05.2023.
-//
+// smoke
 
 import Foundation
 import UIKit
