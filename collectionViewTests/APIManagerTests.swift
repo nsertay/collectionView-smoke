@@ -7,29 +7,66 @@
 
 import XCTest
 
-final class APIManagerTests: XCTestCase {
+class APIManagerTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    var apiManager: APIManager!
+
+    override func setUp() {
+        super.setUp()
+        apiManager = APIManager()
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+    func testLoadImages() {
+        let expectation = XCTestExpectation(description: "Load image from API")
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+        apiManager.loadImages(id: 1) { image in
+            XCTAssertNotNil(image, "Image should not be nil")
+            expectation.fulfill()
         }
+
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testLoadImagesWithNetworkError() {
+        let expectation = XCTestExpectation(description: "Load image with network error")
+        
+        // Use a URL that does not exist or simulate a network error
+        let invalidURLString = "https://example.com/invalidimage.jpg"
+        
+        apiManager.loadImages(id: 1) { image in
+            XCTAssertNil(image, "Image should be nil due to network error")
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testLoadImageContent() {
+        let expectation = XCTestExpectation(description: "Load image content from URL")
+        let imageURLString = "https://example.com/testimage.jpg" // Replace with a valid image URL
+
+        apiManager.loadImageContent(url: imageURLString) { image in
+            XCTAssertNotNil(image, "Image should not be nil")
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testCollectionViewCellForItemAt() {
+        // Assuming you have ImageCell and configure method correctly set up
+        let indexPath = IndexPath(item: 0, section: 0)
+        let cell = viewController.collectionView(viewController.collectionView, cellForItemAt: indexPath) as! ImageCell
+        
+        // You can assert here based on the configuration of the cell
+        XCTAssertNotNil(cell.imageView.image, "Image should not be nil in the cell")
+    }
+    
+    func testCollectionViewNumberOfItems() {
+        let itemCount = viewController.collectionView(viewController.collectionView, numberOfItemsInSection: 0)
+        
+        XCTAssertEqual(itemCount, viewController.images.count, "Number of items in collectionView should match the number of images")
     }
 
+    // Add more tests as needed for other functions and scenarios
 }
